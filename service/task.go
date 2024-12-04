@@ -30,7 +30,7 @@ func (s *TaskService) CreateTask(params dto.TaskRequest) (*model.Task, error) {
 	task := model.Task{
 		Title:       params.Title,
 		Description: params.Description,
-		Completed:   params.Completed,
+		Completed:   false,
 		StartDate:   params.StartDate,
 		Deadline:    params.Deadline,
 		CreatedAt:   time.Now(),
