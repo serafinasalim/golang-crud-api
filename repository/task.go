@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"golang-crud-api/model"
 )
 
@@ -17,4 +18,10 @@ func (r *TaskRepository) GetAllTasks() ([]model.Task, error) {
 		return []model.Task{}, nil
 	}
 	return tasks, nil
+}
+
+func (r *TaskRepository) CreateTask(task *model.Task) (*model.Task, error) {
+	task.Id = fmt.Sprintf("%d", len(tasks)+1) // Simple ID Generationo
+	tasks = append(tasks, *task)
+	return task, nil
 }

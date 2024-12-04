@@ -1,5 +1,26 @@
 basePath: /api/v1
 definitions:
+  dto.TaskRequest:
+    properties:
+      completed:
+        type: boolean
+      deadline:
+        type: string
+      description:
+        minLength: 5
+        type: string
+      startDate:
+        type: string
+      title:
+        maxLength: 100
+        type: string
+    required:
+    - completed
+    - deadline
+    - description
+    - startDate
+    - title
+    type: object
   model.Task:
     properties:
       completed:
@@ -68,6 +89,57 @@ paths:
           schema:
             $ref: '#/definitions/utils.HTTPError'
       summary: Get All Tasks
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task Request Body
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Task created successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Task'
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Failed to create task
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Create Tasks
       tags:
       - Tasks
 swagger: "2.0"
