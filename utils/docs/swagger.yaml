@@ -1,4 +1,73 @@
+basePath: /api/v1
+definitions:
+  model.Task:
+    properties:
+      completed:
+        type: boolean
+      createdAt:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      startDate:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  utils.APIResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        default: true
+        type: boolean
+    type: object
+  utils.HTTPError:
+    properties:
+      error: {}
+      message:
+        type: string
+      success:
+        default: false
+        type: boolean
+    type: object
+host: localhost:8080
 info:
   contact: {}
-paths: {}
+  description: This is a simple CRUD API for qubic ball assessment
+  title: Task Management API
+  version: "1.0"
+paths:
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all tasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tasks fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Task'
+                  type: array
+              type: object
+        "500":
+          description: Failed to fetch tasks
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Get All Tasks
+      tags:
+      - Tasks
 swagger: "2.0"
