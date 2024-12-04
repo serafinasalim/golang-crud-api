@@ -6,7 +6,10 @@ import (
 	"golang-crud-api/model"
 )
 
-var tasks []model.Task
+var (
+	tasks     []model.Task
+	idCounter = 1 // Counter to ensure unique IDs
+)
 
 type TaskRepository struct{}
 
@@ -22,7 +25,8 @@ func (r *TaskRepository) GetAllTasks() ([]model.Task, error) {
 }
 
 func (r *TaskRepository) CreateTask(task *model.Task) (*model.Task, error) {
-	task.Id = fmt.Sprintf("%d", len(tasks)+1) // Simple ID Generationo
+	task.Id = fmt.Sprintf("%d", idCounter)
+	idCounter++
 	tasks = append(tasks, *task)
 	return task, nil
 }
