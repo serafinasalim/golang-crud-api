@@ -47,3 +47,34 @@ func (s *TaskService) GetTaskById(id string) (model.Task, error) {
 	}
 	return task, nil
 }
+
+func (s *TaskService) UpdateTask(id string, taskUpdate dto.TaskUpdate) (*model.Task, error) {
+	// Find the task by ID
+	task, err := s.repository.GetTaskById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Apply updates to the task
+	if taskUpdate.Description != "" {
+		task.Description = taskUpdate.Description
+	}
+	if taskUpdate.Completed != task.Completed {
+		task.Completed = taskUpdate.Completed
+	}
+	if !taskUpdate.StartDate.IsZero() {
+		task.StartDate = taskUpdate.StartDate
+	}
+	if !taskUpdate.Deadline.IsZero() {
+		task.Deadline = taskUpdate.Deadline
+	}
+
+	task.UpdatedAt = time.Now()
+
+	updatedTask, err := s.repository.UpdateTask(id, &task)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedTask, nil
+}

@@ -35,3 +35,26 @@ func (r *TaskRepository) GetTaskById(id string) (model.Task, error) {
 	}
 	return model.Task{}, errors.New("task not found")
 }
+
+func (r *TaskRepository) UpdateTask(id string, updatedTask *model.Task) (*model.Task, error) {
+	for i, task := range tasks {
+		if task.Id == id {
+			if updatedTask.Description != "" {
+				tasks[i].Description = updatedTask.Description
+			}
+			if updatedTask.Completed != tasks[i].Completed {
+				tasks[i].Completed = updatedTask.Completed
+			}
+			if !updatedTask.StartDate.IsZero() {
+				tasks[i].StartDate = updatedTask.StartDate
+			}
+			if !updatedTask.Deadline.IsZero() {
+				tasks[i].Deadline = updatedTask.Deadline
+			}
+
+			tasks[i].UpdatedAt = updatedTask.UpdatedAt
+			return &tasks[i], nil
+		}
+	}
+	return nil, fmt.Errorf("task with Id %s not found", id)
+}
