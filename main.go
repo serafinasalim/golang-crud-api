@@ -38,6 +38,7 @@ func main() {
 		taskGroup.GET("/", taskController.GetAllTasks)
 		taskGroup.POST("/", taskController.CreateTask)
 		taskGroup.GET("/:id", taskController.GetTaskById)
+		taskGroup.PATCH("/:id", taskController.UpdateTask)
 	}
 
 	// Start the server

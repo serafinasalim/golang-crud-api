@@ -91,3 +91,32 @@ func (c *TaskController) GetTaskById(ctx *gin.Context) {
 
 	utils.RespondSuccess(ctx, http.StatusOK, "Task fetched successfully", task)
 }
+
+// @Summary Update Task
+// @Description
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Param id path string true "Task Id"
+// @Param taskUpdate body dto.TaskUpdate true "Updated Task"
+// @Success 200 {object} model.Task "Task updated successfully"
+// @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid input"
+// @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
+// @Router /tasks/{id} [patch]
+func (c *TaskController) UpdateTask(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var taskUpdate dto.TaskUpdate
+	if err := ctx.ShouldBindJSON(&taskUpdate); err != nil {
+		utils.RespondError(ctx, http.StatusBadRequest, "Invalid input", err)
+		return
+	}
+
+	updatedTask, err := c.service.UpdateTask(id, taskUpdate)
+	if err != nil {
+		utils.RespondError(ctx, http.StatusNotFound, "Task not found", err)
+		return
+	}
+
+	utils.RespondSuccess(ctx, http.StatusOK, "Task updated successfully", updatedTask)
+}

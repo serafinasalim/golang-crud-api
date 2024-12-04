@@ -8,3 +8,10 @@ type TaskRequest struct {
 	StartDate   time.Time `json:"startDate" binding:"required"`
 	Deadline    time.Time `json:"deadline" binding:"required"`
 }
+
+type TaskUpdate struct {
+	Description string    `json:"description" binding:"omitempty,min=5"`
+	Completed   bool      `json:"completed"`
+	StartDate   time.Time `json:"startDate"`
+	Deadline    time.Time `json:"deadline"`
+}

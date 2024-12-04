@@ -18,6 +18,18 @@ definitions:
     - startDate
     - title
     type: object
+  dto.TaskUpdate:
+    properties:
+      completed:
+        type: boolean
+      deadline:
+        type: string
+      description:
+        minLength: 5
+        type: string
+      startDate:
+        type: string
+    type: object
   model.Task:
     properties:
       completed:
@@ -184,6 +196,53 @@ paths:
                   type: string
               type: object
       summary: Get Task by Id
+      tags:
+      - Tasks
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated Task
+        in: body
+        name: taskUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TaskUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task updated successfully
+          schema:
+            $ref: '#/definitions/model.Task'
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "404":
+          description: Task not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Update Task
       tags:
       - Tasks
 swagger: "2.0"
