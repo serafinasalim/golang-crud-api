@@ -59,6 +59,7 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "description": "Sample Payload: \u003cbr\u003e ` + "`" + `{ ` + "`" + `\u003cbr\u003e` + "`" + ` \"title\": \"Fix Bugs\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"description\": \"fix multiple bugs in dev\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"startDate\": \"2024-12-05T00:00:00Z\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"deadline\": \"2024-12-07T00:00:00Z\" ` + "`" + `\u003cbr\u003e` + "`" + ` }` + "`" + `",
                 "consumes": [
                     "application/json"
                 ],
@@ -129,22 +130,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Failed to create task",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/utils.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
@@ -214,22 +200,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Failed to fetch task",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/utils.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/utils.HTTPError"
                         }
                     }
                 }
@@ -306,6 +277,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "description": "Sample Payload (only send the ones you want to update): \u003cbr\u003e ` + "`" + `{ ` + "`" + `\u003cbr\u003e` + "`" + ` \"description\": \"fix lots of bugs\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"completed\": true, ` + "`" + `\u003cbr\u003e` + "`" + ` \"startDate\": \"2024-12-05T00:00:00Z\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"deadline\": \"2024-12-07T00:00:00Z\" ` + "`" + `\u003cbr\u003e` + "`" + ` }` + "`" + `",
                 "consumes": [
                     "application/json"
                 ],

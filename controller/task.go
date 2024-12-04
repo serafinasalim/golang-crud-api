@@ -41,14 +41,14 @@ func (c *TaskController) GetAllTasks(ctx *gin.Context) {
 }
 
 // @Summary Create Tasks
-// @Description
+// @Description Sample Payload: <br> `{ `<br>` "title": "Fix Bugs", `<br>` "description": "fix multiple bugs in dev", `<br>` "startDate": "2024-12-05T00:00:00Z", `<br>` "deadline": "2024-12-07T00:00:00Z" `<br>` }`
 // @Tags Tasks
 // @Accept json
 // @Produce json
 // @Param task body dto.TaskRequest true "Task Request Body"
 // @Success 201 {object} utils.APIResponse{status=string,message=string,data=model.Task} "Task created successfully"
 // @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid input"
-// @Failure 500 {object} utils.APIResponse{status=string,message=string} "Failed to create task"
+// @Failure 500 {object} utils.HTTPError "Failed to create task"
 // @Router /tasks [post]
 func (c *TaskController) CreateTask(ctx *gin.Context) {
 	var params dto.TaskRequest
@@ -75,7 +75,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 // @Param id path string true "Task Id"
 // @Success 200 {object} utils.APIResponse{data=model.Task} "Task fetched successfully"
 // @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
-// @Failure 500 {object} utils.APIResponse{status=string,message=string} "Failed to fetch task"
+// @Failure 500 {object} utils.HTTPError "Failed to fetch task"
 // @Router /tasks/{id} [get]
 func (c *TaskController) GetTaskById(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -93,7 +93,7 @@ func (c *TaskController) GetTaskById(ctx *gin.Context) {
 }
 
 // @Summary Update Task
-// @Description
+// @Description Sample Payload (only send the ones you want to update): <br> `{ `<br>` "description": "fix lots of bugs", `<br>` "completed": true, `<br>` "startDate": "2024-12-05T00:00:00Z", `<br>` "deadline": "2024-12-07T00:00:00Z" `<br>` }`
 // @Tags Tasks
 // @Accept json
 // @Produce json
