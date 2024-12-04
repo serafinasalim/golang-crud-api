@@ -39,3 +39,11 @@ func (s *TaskService) CreateTask(params dto.TaskRequest) (*model.Task, error) {
 
 	return s.repository.CreateTask(&task)
 }
+
+func (s *TaskService) GetTaskById(id string) (model.Task, error) {
+	task, err := s.repository.GetTaskById(id)
+	if err != nil {
+		return model.Task{}, err
+	}
+	return task, nil
+}

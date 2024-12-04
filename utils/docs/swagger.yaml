@@ -2,8 +2,6 @@ basePath: /api/v1
 definitions:
   dto.TaskRequest:
     properties:
-      completed:
-        type: boolean
       deadline:
         type: string
       description:
@@ -15,7 +13,6 @@ definitions:
         maxLength: 100
         type: string
     required:
-    - completed
     - deadline
     - description
     - startDate
@@ -140,6 +137,53 @@ paths:
                   type: string
               type: object
       summary: Create Tasks
+      tags:
+      - Tasks
+  /tasks/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task fetched successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Task'
+              type: object
+        "404":
+          description: Task not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Failed to fetch task
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Get Task by Id
       tags:
       - Tasks
 swagger: "2.0"

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"golang-crud-api/model"
 )
@@ -24,4 +25,13 @@ func (r *TaskRepository) CreateTask(task *model.Task) (*model.Task, error) {
 	task.Id = fmt.Sprintf("%d", len(tasks)+1) // Simple ID Generationo
 	tasks = append(tasks, *task)
 	return task, nil
+}
+
+func (r *TaskRepository) GetTaskById(id string) (model.Task, error) {
+	for _, task := range tasks {
+		if task.Id == id {
+			return task, nil
+		}
+	}
+	return model.Task{}, errors.New("task not found")
 }
