@@ -66,3 +66,28 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 
 	utils.RespondSuccess(ctx, http.StatusCreated, "Task created successfully", createdTask)
 }
+
+// @Summary Get Task by Id
+// @Description
+// @Tags Tasks
+// @Accept json
+// @Produce json
+// @Param id path string true "Task Id"
+// @Success 200 {object} utils.APIResponse{data=model.Task} "Task fetched successfully"
+// @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
+// @Failure 500 {object} utils.APIResponse{status=string,message=string} "Failed to fetch task"
+// @Router /tasks/{id} [get]
+func (c *TaskController) GetTaskById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	task, err := c.service.GetTaskById(id)
+	if err != nil {
+		if err.Error() == "task not found" {
+			utils.RespondError(ctx, http.StatusNotFound, "Task not found", err)
+		} else {
+			utils.RespondError(ctx, http.StatusInternalServerError, "Failed to fetch task", err)
+		}
+		return
+	}
+
+	utils.RespondSuccess(ctx, http.StatusOK, "Task fetched successfully", task)
+}

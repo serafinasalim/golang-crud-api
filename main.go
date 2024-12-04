@@ -37,6 +37,7 @@ func main() {
 	{
 		taskGroup.GET("/", taskController.GetAllTasks)
 		taskGroup.POST("/", taskController.CreateTask)
+		taskGroup.GET("/:id", taskController.GetTaskById)
 	}
 
 	// Start the server
