@@ -103,6 +103,9 @@ paths:
     post:
       consumes:
       - application/json
+      description: 'Sample Payload: <br> `{ `<br>` "title": "Fix Bugs", `<br>` "description":
+        "fix multiple bugs in dev", `<br>` "startDate": "2024-12-05T00:00:00Z", `<br>`
+        "deadline": "2024-12-07T00:00:00Z" `<br>` }`'
       parameters:
       - description: Task Request Body
         in: body
@@ -140,14 +143,7 @@ paths:
         "500":
           description: Failed to create task
           schema:
-            allOf:
-            - $ref: '#/definitions/utils.APIResponse'
-            - properties:
-                message:
-                  type: string
-                status:
-                  type: string
-              type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: Create Tasks
       tags:
       - Tasks
@@ -228,20 +224,17 @@ paths:
         "500":
           description: Failed to fetch task
           schema:
-            allOf:
-            - $ref: '#/definitions/utils.APIResponse'
-            - properties:
-                message:
-                  type: string
-                status:
-                  type: string
-              type: object
+            $ref: '#/definitions/utils.HTTPError'
       summary: Get Task by Id
       tags:
       - Tasks
     patch:
       consumes:
       - application/json
+      description: 'Sample Payload (only send the ones you want to update): <br> `{
+        `<br>` "description": "fix lots of bugs", `<br>` "completed": true, `<br>`
+        "startDate": "2024-12-05T00:00:00Z", `<br>` "deadline": "2024-12-07T00:00:00Z"
+        `<br>` }`'
       parameters:
       - description: Task Id
         in: path
