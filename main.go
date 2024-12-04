@@ -36,6 +36,7 @@ func main() {
 	taskGroup := api.Group("/tasks")
 	{
 		taskGroup.GET("/", taskController.GetAllTasks)
+		taskGroup.POST("/", taskController.CreateTask)
 	}
 
 	// Start the server
