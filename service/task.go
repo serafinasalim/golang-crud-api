@@ -78,3 +78,7 @@ func (s *TaskService) UpdateTask(id string, taskUpdate dto.TaskUpdate) (*model.T
 
 	return updatedTask, nil
 }
+
+func (s *TaskService) DeleteTask(id string) error {
+	return s.repository.DeleteTask(id)
+}

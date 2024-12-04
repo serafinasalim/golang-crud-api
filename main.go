@@ -39,6 +39,7 @@ func main() {
 		taskGroup.POST("/", taskController.CreateTask)
 		taskGroup.GET("/:id", taskController.GetTaskById)
 		taskGroup.PATCH("/:id", taskController.UpdateTask)
+		taskGroup.DELETE("/:id", taskController.DeleteTask)
 	}
 
 	// Start the server

@@ -58,3 +58,13 @@ func (r *TaskRepository) UpdateTask(id string, updatedTask *model.Task) (*model.
 	}
 	return nil, fmt.Errorf("task with Id %s not found", id)
 }
+
+func (r *TaskRepository) DeleteTask(id string) error {
+	for i, task := range tasks {
+		if task.Id == id {
+			tasks = append(tasks[:i], tasks[i+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("task with Id %s not found", id)
+}
