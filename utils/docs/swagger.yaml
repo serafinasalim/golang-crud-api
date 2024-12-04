@@ -152,6 +152,47 @@ paths:
       tags:
       - Tasks
   /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Task deleted successfully
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
+        "400":
+          description: Invalid request
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "404":
+          description: Task not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+      summary: Delete Task
+      tags:
+      - Tasks
     get:
       consumes:
       - application/json

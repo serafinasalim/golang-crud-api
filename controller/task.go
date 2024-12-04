@@ -120,3 +120,26 @@ func (c *TaskController) UpdateTask(ctx *gin.Context) {
 
 	utils.RespondSuccess(ctx, http.StatusOK, "Task updated successfully", updatedTask)
 }
+
+// @Summary Delete Task
+// @Description
+// @Tags Tasks
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Task Id"
+// @Success 200 {object} utils.APIResponse "Task deleted successfully"
+// @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid request"
+// @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
+// @Router /tasks/{id} [delete]
+func (c *TaskController) DeleteTask(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	err := c.service.DeleteTask(id)
+	if err != nil {
+		utils.RespondError(ctx, http.StatusNotFound, "Task not found", err)
+		return
+	}
+
+	// Respond with a success message if deletion is successful
+	utils.RespondSuccess(ctx, http.StatusOK, "Task deleted successfully", nil)
+}
