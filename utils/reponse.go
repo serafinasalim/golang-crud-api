@@ -2,6 +2,10 @@ package utils
 
 import "github.com/gin-gonic/gin"
 
+const (
+	MsgOk = "OK"
+)
+
 type HTTPError struct {
 	Success bool   `json:"success" default:"false" `
 	Message string `json:"message,omitempty"`

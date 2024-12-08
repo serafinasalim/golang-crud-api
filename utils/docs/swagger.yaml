@@ -18,6 +18,29 @@ definitions:
     - startDate
     - title
     type: object
+  dto.TaskResponse:
+    properties:
+      completed:
+        type: boolean
+      createdAt:
+        type: string
+      createdBy:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      startDate:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
+        type: string
+    type: object
   dto.TaskUpdate:
     properties:
       completed:
@@ -36,17 +59,23 @@ definitions:
         type: boolean
       createdAt:
         type: string
+      createdBy:
+        type: string
       deadline:
         type: string
       description:
         type: string
       id:
-        type: string
+        type: integer
       startDate:
         type: string
       title:
         type: string
       updatedAt:
+        type: string
+      updatedBy:
+        type: string
+      uuid:
         type: string
     type: object
   utils.APIResponse:
@@ -60,7 +89,8 @@ definitions:
     type: object
   utils.HTTPError:
     properties:
-      error: {}
+      error:
+        type: string
       message:
         type: string
       success:
@@ -90,9 +120,13 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Task'
+                    $ref: '#/definitions/dto.TaskResponse'
                   type: array
               type: object
+        "204":
+          description: Tasks No Record
+          schema:
+            $ref: '#/definitions/utils.APIResponse'
         "500":
           description: Failed to fetch tasks
           schema:
@@ -123,7 +157,7 @@ paths:
             - $ref: '#/definitions/utils.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Task'
+                  type: string
                 message:
                   type: string
                 status:
@@ -147,14 +181,14 @@ paths:
       summary: Create Tasks
       tags:
       - Tasks
-  /tasks/{id}:
+  /tasks/{uuid}:
     delete:
       consumes:
       - application/json
       parameters:
-      - description: Task Id
+      - description: Task Uuid
         in: path
-        name: id
+        name: uuid
         required: true
         type: string
       produces:
@@ -193,9 +227,9 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Task Id
+      - description: Task Uuid
         in: path
-        name: id
+        name: uuid
         required: true
         type: string
       produces:
@@ -208,7 +242,7 @@ paths:
             - $ref: '#/definitions/utils.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/model.Task'
+                  $ref: '#/definitions/dto.TaskResponse'
               type: object
         "404":
           description: Task not found
@@ -225,7 +259,7 @@ paths:
           description: Failed to fetch task
           schema:
             $ref: '#/definitions/utils.HTTPError'
-      summary: Get Task by Id
+      summary: Get Task by Uuid
       tags:
       - Tasks
     patch:
@@ -236,9 +270,9 @@ paths:
         "startDate": "2024-12-05T00:00:00Z", `<br>` "deadline": "2024-12-07T00:00:00Z"
         `<br>` }`'
       parameters:
-      - description: Task Id
+      - description: Task Uuid
         in: path
-        name: id
+        name: uuid
         required: true
         type: string
       - description: Updated Task
@@ -268,14 +302,7 @@ paths:
         "404":
           description: Task not found
           schema:
-            allOf:
-            - $ref: '#/definitions/utils.APIResponse'
-            - properties:
-                message:
-                  type: string
-                status:
-                  type: string
-              type: object
+            $ref: '#/definitions/utils.APIResponse'
       summary: Update Task
       tags:
       - Tasks

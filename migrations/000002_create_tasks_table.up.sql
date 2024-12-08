@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE tasks (
-    id int PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     uuid UUID DEFAULT uuid_generate_v4() NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
