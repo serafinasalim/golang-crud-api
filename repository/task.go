@@ -1,74 +1,185 @@
 package repository
 
 import (
-	"errors"
-	"fmt"
+	"database/sql"
 	"golang-crud-api/model"
+	"log"
+
+	_ "github.com/lib/pq"
 )
 
-var (
-	tasks     []model.Task
-	idCounter = 1 // Counter to ensure unique IDs
-)
-
-type TaskRepository struct{}
-
-func NewTaskRepository() *TaskRepository {
-	return &TaskRepository{}
+type TaskRepository struct {
+	db *sql.DB
 }
 
-func (r *TaskRepository) GetAllTasks() ([]model.Task, error) {
-	if len(tasks) == 0 {
-		return []model.Task{}, nil
+func NewTaskRepository(db *sql.DB) *TaskRepository {
+	if db == nil {
+		log.Fatal("Received nil database connection")
 	}
-	return tasks, nil
+
+	return &TaskRepository{db: db}
 }
 
-func (r *TaskRepository) CreateTask(task *model.Task) (*model.Task, error) {
-	task.Id = fmt.Sprintf("%d", idCounter)
-	idCounter++
-	tasks = append(tasks, *task)
-	return task, nil
-}
+func (r *TaskRepository) GetAllTasks() (result []model.Task, err error) {
+	var task model.Task
+	const query = `SELECT 
+						id, 
+						uuid, 
+						title, 
+						description, 
+						completed, 
+						start_date, 
+						deadline, 
+						created_at, 
+						created_by, 
+						updated_at, 
+						updated_by 
+					FROM public.tasks`
 
-func (r *TaskRepository) GetTaskById(id string) (model.Task, error) {
-	for _, task := range tasks {
-		if task.Id == id {
-			return task, nil
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(
+			&task.Id,
+			&task.Uuid,
+			&task.Title,
+			&task.Description,
+			&task.Completed,
+			&task.StartDate,
+			&task.Deadline,
+			&task.CreatedAt,
+			&task.CreatedBy,
+			&task.UpdatedAt,
+			&task.UpdatedBy,
+		); err != nil {
+			return nil, err
 		}
+		result = append(result, task)
 	}
-	return model.Task{}, errors.New("task not found")
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
-func (r *TaskRepository) UpdateTask(id string, updatedTask *model.Task) (*model.Task, error) {
-	for i, task := range tasks {
-		if task.Id == id {
-			if updatedTask.Description != "" {
-				tasks[i].Description = updatedTask.Description
-			}
-			if updatedTask.Completed != tasks[i].Completed {
-				tasks[i].Completed = updatedTask.Completed
-			}
-			if !updatedTask.StartDate.IsZero() {
-				tasks[i].StartDate = updatedTask.StartDate
-			}
-			if !updatedTask.Deadline.IsZero() {
-				tasks[i].Deadline = updatedTask.Deadline
-			}
+func (r *TaskRepository) CreateTask(params model.Task) (result *string, err error) {
+	const query = `INSERT INTO public.tasks (
+						title, 
+						description, 
+						completed, 
+						start_date, 
+						deadline, 
+						created_at,
+						created_by
+					)
+					VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
-			tasks[i].UpdatedAt = updatedTask.UpdatedAt
-			return &tasks[i], nil
-		}
+	_, err = r.db.Exec(
+		query,
+		params.Title,
+		params.Description,
+		params.Completed,
+		params.StartDate,
+		params.Deadline,
+		params.CreatedAt,
+		params.CreatedBy,
+	)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("task with Id %s not found", id)
+	result = &params.Title
+
+	return result, nil
 }
 
-func (r *TaskRepository) DeleteTask(id string) error {
-	for i, task := range tasks {
-		if task.Id == id {
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			return nil
-		}
+func (r *TaskRepository) GetTaskByUuid(uuid string) (result *model.Task, err error) {
+	var task model.Task
+	const query = `SELECT 
+						id, 
+						uuid, 
+						title, 
+						description, 
+						completed, 
+						start_date, 
+						deadline, 
+						created_at, 
+						created_by, 
+						updated_at, 
+						updated_by 
+					FROM public.tasks 
+					WHERE uuid = $1`
+
+	err = r.db.QueryRow(query, uuid).Scan(
+		&task.Id,
+		&task.Uuid,
+		&task.Title,
+		&task.Description,
+		&task.Completed,
+		&task.StartDate,
+		&task.Deadline,
+		&task.CreatedAt,
+		&task.CreatedBy,
+		&task.UpdatedAt,
+		&task.UpdatedBy,
+	)
+	if err != nil {
+		return nil, err
 	}
-	return fmt.Errorf("task with Id %s not found", id)
+
+	return &task, nil
+}
+
+func (r *TaskRepository) UpdateTask(params *model.Task) (err error) {
+	// Query untuk memperbarui task berdasarkan ID
+	const query = `UPDATE public.tasks SET
+						description = COALESCE($2, description),
+						completed = COALESCE($3, completed),
+						start_date = COALESCE($4, start_date),
+						deadline = COALESCE($5, deadline),
+						updated_at = $6,
+						updated_by = $7
+					WHERE uuid = $1`
+
+	_, err = r.db.Exec(
+		query,
+		params.Uuid,
+		params.Description,
+		params.Completed,
+		params.StartDate,
+		params.Deadline,
+		params.UpdatedAt,
+		params.UpdatedBy,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *TaskRepository) DeleteTask(uuid string) (err error) {
+	const query = `DELETE FROM public.tasks WHERE uuid = $1`
+
+	result, err := r.db.Exec(query, uuid)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return err
+	}
+
+	return nil
 }

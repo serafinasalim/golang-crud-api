@@ -2,6 +2,7 @@ package service
 
 import (
 	"golang-crud-api/dto"
+	"golang-crud-api/helper"
 	"golang-crud-api/model"
 	"golang-crud-api/repository"
 	"time"
@@ -15,7 +16,7 @@ func NewTaskService(repository *repository.TaskRepository) *TaskService {
 	return &TaskService{repository: repository}
 }
 
-func (s *TaskService) GetAllTasks() ([]model.Task, error) {
+func (s *TaskService) GetAllTasks() (result []dto.TaskResponse, err error) {
 	tasks, err := s.repository.GetAllTasks()
 	if err != nil {
 		return nil, err
@@ -23,10 +24,18 @@ func (s *TaskService) GetAllTasks() ([]model.Task, error) {
 	if len(tasks) == 0 {
 		return nil, nil
 	}
-	return tasks, nil
+
+	var res []dto.TaskResponse
+
+	// Convert to Dto to avoid security risks by not returning id (guessable)
+	for _, task := range tasks {
+		res = append(res, helper.ConvertTaskToDto(task))
+	}
+
+	return res, nil
 }
 
-func (s *TaskService) CreateTask(params dto.TaskRequest) (*model.Task, error) {
+func (s *TaskService) CreateTask(params dto.TaskRequest) (result *string, err error) {
 	task := model.Task{
 		Title:       params.Title,
 		Description: params.Description,
@@ -34,51 +43,75 @@ func (s *TaskService) CreateTask(params dto.TaskRequest) (*model.Task, error) {
 		StartDate:   params.StartDate,
 		Deadline:    params.Deadline,
 		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		CreatedBy:   "placeholder",
 	}
+	// placeholder before jwt authentication integration
 
-	return s.repository.CreateTask(&task)
-}
-
-func (s *TaskService) GetTaskById(id string) (model.Task, error) {
-	task, err := s.repository.GetTaskById(id)
-	if err != nil {
-		return model.Task{}, err
-	}
-	return task, nil
-}
-
-func (s *TaskService) UpdateTask(id string, taskUpdate dto.TaskUpdate) (*model.Task, error) {
-	// Find the task by ID
-	task, err := s.repository.GetTaskById(id)
+	res, err := s.repository.CreateTask(task)
 	if err != nil {
 		return nil, err
 	}
 
-	// Apply updates to the task
-	if taskUpdate.Description != "" {
-		task.Description = taskUpdate.Description
-	}
-	if taskUpdate.Completed != task.Completed {
-		task.Completed = taskUpdate.Completed
-	}
-	if !taskUpdate.StartDate.IsZero() {
-		task.StartDate = taskUpdate.StartDate
-	}
-	if !taskUpdate.Deadline.IsZero() {
-		task.Deadline = taskUpdate.Deadline
-	}
+	return res, nil
+}
 
-	task.UpdatedAt = time.Now()
-
-	updatedTask, err := s.repository.UpdateTask(id, &task)
+func (s *TaskService) GetTaskByUuid(uuid string) (result *dto.TaskResponse, err error) {
+	task, err := s.repository.GetTaskByUuid(uuid)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedTask, nil
+	res := &dto.TaskResponse{
+		// Not returning id to avoid security risks (guessable)
+		Uuid:        task.Uuid,
+		Title:       task.Title,
+		Description: task.Description,
+		Completed:   task.Completed,
+		StartDate:   task.StartDate,
+		Deadline:    task.Deadline,
+		CreatedAt:   task.CreatedAt,
+		CreatedBy:   task.CreatedBy,
+		UpdatedAt:   task.UpdatedAt,
+		UpdatedBy:   task.UpdatedBy,
+	}
+
+	return res, nil
 }
 
-func (s *TaskService) DeleteTask(id string) error {
-	return s.repository.DeleteTask(id)
+func (s *TaskService) UpdateTask(uuid string, params dto.TaskUpdate) (err error) {
+	// Find the task by Uuid
+	_, err = s.repository.GetTaskByUuid(uuid)
+	if err != nil {
+		return err
+	}
+
+	updateValue := &model.Task{
+		Uuid:        uuid,
+		Description: params.Description,
+		Completed:   params.Completed,
+		StartDate:   params.StartDate,
+		Deadline:    params.Deadline,
+	}
+
+	err = s.repository.UpdateTask(updateValue)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *TaskService) DeleteTask(uuid string) (err error) {
+	// Find the task by Uuid
+	_, err = s.repository.GetTaskByUuid(uuid)
+	if err != nil {
+		return err
+	}
+
+	err = s.repository.DeleteTask(uuid)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

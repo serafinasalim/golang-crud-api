@@ -42,12 +42,18 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Task"
+                                                "$ref": "#/definitions/dto.TaskResponse"
                                             }
                                         }
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "204": {
+                        "description": "Tasks No Record",
+                        "schema": {
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     },
                     "500": {
@@ -93,7 +99,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Task"
+                                            "type": "string"
                                         },
                                         "message": {
                                             "type": "string"
@@ -136,7 +142,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tasks/{id}": {
+        "/tasks/{uuid}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -147,12 +153,12 @@ const docTemplate = `{
                 "tags": [
                     "Tasks"
                 ],
-                "summary": "Get Task by Id",
+                "summary": "Get Task by Uuid",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Task Id",
-                        "name": "id",
+                        "description": "Task Uuid",
+                        "name": "uuid",
                         "in": "path",
                         "required": true
                     }
@@ -169,7 +175,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.Task"
+                                            "$ref": "#/definitions/dto.TaskResponse"
                                         }
                                     }
                                 }
@@ -219,8 +225,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Task Id",
-                        "name": "id",
+                        "description": "Task Uuid",
+                        "name": "uuid",
                         "in": "path",
                         "required": true
                     }
@@ -291,8 +297,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Task Id",
-                        "name": "id",
+                        "description": "Task Uuid",
+                        "name": "uuid",
                         "in": "path",
                         "required": true
                     },
@@ -337,22 +343,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Task not found",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/utils.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/utils.APIResponse"
                         }
                     }
                 }
@@ -385,6 +376,41 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TaskUpdate": {
             "type": "object",
             "properties": {
@@ -412,6 +438,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "createdBy": {
+                    "type": "string"
+                },
                 "deadline": {
                     "type": "string"
                 },
@@ -419,7 +448,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "startDate": {
                     "type": "string"
@@ -428,6 +457,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "string"
+                },
+                "uuid": {
                     "type": "string"
                 }
             }
@@ -448,7 +483,9 @@ const docTemplate = `{
         "utils.HTTPError": {
             "type": "object",
             "properties": {
-                "error": {},
+                "error": {
+                    "type": "string"
+                },
                 "message": {
                     "type": "string"
                 },

@@ -2,6 +2,7 @@ package main
 
 import (
 	"golang-crud-api/controller"
+	"golang-crud-api/database"
 	"golang-crud-api/repository"
 	"golang-crud-api/service"
 	_ "golang-crud-api/utils/docs"
@@ -20,9 +21,11 @@ import (
 // @BasePath /api/v1
 
 func main() {
+	database.ConnectDB()
+
 	r := gin.Default()
 
-	taskRepository := &repository.TaskRepository{}
+	taskRepository := repository.NewTaskRepository(database.DB)
 
 	taskService := service.NewTaskService(taskRepository)
 
@@ -37,9 +40,9 @@ func main() {
 	{
 		taskGroup.GET("/", taskController.GetAllTasks)
 		taskGroup.POST("/", taskController.CreateTask)
-		taskGroup.GET("/:id", taskController.GetTaskById)
-		taskGroup.PATCH("/:id", taskController.UpdateTask)
-		taskGroup.DELETE("/:id", taskController.DeleteTask)
+		taskGroup.GET("/:uuid", taskController.GetTaskByUuid)
+		taskGroup.PATCH("/:uuid", taskController.UpdateTask)
+		taskGroup.DELETE("/:uuid", taskController.DeleteTask)
 	}
 
 	// Start the server
