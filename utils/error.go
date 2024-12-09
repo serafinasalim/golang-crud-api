@@ -7,6 +7,7 @@ const (
 	ErrInternalServer     = "Internal server error"
 	ErrInvalidTaskId      = "Invalid task id"
 	ErrInvalidCredentials = "Invalid username or password"
+	ErrUsernameDontExist  = "Username don't exist "
 	ErrTokenGeneration    = "Error generating token"
 	ErrInvalidToken       = "Invalid or expired token"
 	ErrTokenMissing       = "Token is required"

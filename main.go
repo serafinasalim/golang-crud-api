@@ -26,10 +26,13 @@ func main() {
 	r := gin.Default()
 
 	taskRepository := repository.NewTaskRepository(database.DB)
+	authRepository := repository.NewAuthRepository(database.DB)
 
 	taskService := service.NewTaskService(taskRepository)
+	authService := service.NewAuthService(authRepository)
 
 	taskController := controller.NewTaskController(taskService)
+	authController := controller.NewAuthController(authService)
 
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -43,6 +46,13 @@ func main() {
 		taskGroup.GET("/:uuid", taskController.GetTaskByUuid)
 		taskGroup.PATCH("/:uuid", taskController.UpdateTask)
 		taskGroup.DELETE("/:uuid", taskController.DeleteTask)
+	}
+
+	// Auth Group
+	authGroup := api.Group("/auth")
+	{
+		authGroup.POST("/register", authController.Register)
+		authGroup.POST("/login", authController.Login)
 	}
 
 	// Start the server
