@@ -7,6 +7,7 @@ type TaskRequest struct {
 	Description string    `json:"description" binding:"required,min=5"`
 	StartDate   time.Time `json:"startDate" binding:"required"`
 	Deadline    time.Time `json:"deadline" binding:"required"`
+	CreatedBy   string    `json:"createdBy"`
 }
 
 type TaskUpdate struct {
@@ -14,6 +15,7 @@ type TaskUpdate struct {
 	Completed   bool      `json:"completed"`
 	StartDate   time.Time `json:"startDate"`
 	Deadline    time.Time `json:"deadline"`
+	UpdatedBy   *string   `json:"updatedBy"`
 }
 
 type TaskResponse struct {

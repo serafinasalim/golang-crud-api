@@ -3,6 +3,7 @@ package main
 import (
 	"golang-crud-api/controller"
 	"golang-crud-api/database"
+	"golang-crud-api/middleware"
 	"golang-crud-api/repository"
 	"golang-crud-api/service"
 	_ "golang-crud-api/utils/docs"
@@ -19,6 +20,10 @@ import (
 
 // @host localhost:8080
 // @BasePath /api/v1
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
 
 func main() {
 	database.ConnectDB()
@@ -39,7 +44,7 @@ func main() {
 	api := r.Group("api/v1")
 
 	// Task Group
-	taskGroup := api.Group("/tasks")
+	taskGroup := api.Group("/tasks").Use(middleware.AuthMiddleware())
 	{
 		taskGroup.GET("/", taskController.GetAllTasks)
 		taskGroup.POST("/", taskController.CreateTask)

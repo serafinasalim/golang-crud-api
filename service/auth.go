@@ -52,7 +52,7 @@ func (s *AuthService) Login(params dto.LoginRequest) (result *dto.LoginResponse,
 	}
 
 	// Generate JWT token
-	token, err := helper.GenerateJWT(user.Id)
+	token, err := helper.GenerateJWT(user.Id, user.Username)
 	if err != nil {
 		return nil, err
 	}
