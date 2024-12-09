@@ -1,5 +1,28 @@
 basePath: /api/v1
 definitions:
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
   dto.TaskRequest:
     properties:
       deadline:
@@ -104,6 +127,100 @@ info:
   title: Task Management API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 'Sample Payload: <br> `{ `<br>` "username": "username", `<br>`
+        "password": "password" `<br>` }`'
+      parameters:
+      - description: Login Request Body
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Login successful
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                data:
+                  type: string
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Failed to login
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Login User
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 'Sample Payload: <br> `{ `<br>` "username": "username", `<br>`
+        "email": "email@gmail.com", `<br>` "password": "password" `<br>` }`'
+      parameters:
+      - description: Register Request Body
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                data:
+                  type: string
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.APIResponse'
+            - properties:
+                message:
+                  type: string
+                status:
+                  type: string
+              type: object
+        "500":
+          description: Failed to register user
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: Register User
+      tags:
+      - Auth
   /tasks:
     get:
       consumes:

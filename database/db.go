@@ -10,7 +10,7 @@ import (
 var DB *sql.DB
 
 func ConnectDB() {
-	connStr := "user=username password=password dbname=qubic sslmode=disable"
+	connStr := "user=postgres password=12345 dbname=golang-crud sslmode=disable"
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
