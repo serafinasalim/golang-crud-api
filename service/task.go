@@ -25,14 +25,12 @@ func (s *TaskService) GetAllTasks() (result []dto.TaskResponse, err error) {
 		return nil, nil
 	}
 
-	var res []dto.TaskResponse
-
 	// Convert to Dto to avoid security risks by not returning id (guessable)
 	for _, task := range tasks {
-		res = append(res, helper.ConvertTaskToDto(task))
+		result = append(result, helper.ConvertTaskToDto(task))
 	}
 
-	return res, nil
+	return result, nil
 }
 
 func (s *TaskService) CreateTask(params dto.TaskRequest) (result *string, err error) {
@@ -43,16 +41,15 @@ func (s *TaskService) CreateTask(params dto.TaskRequest) (result *string, err er
 		StartDate:   params.StartDate,
 		Deadline:    params.Deadline,
 		CreatedAt:   time.Now(),
-		CreatedBy:   "placeholder",
+		CreatedBy:   params.CreatedBy,
 	}
-	// placeholder before jwt authentication integration
 
-	res, err := s.repository.CreateTask(task)
+	result, err = s.repository.CreateTask(task)
 	if err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	return result, nil
 }
 
 func (s *TaskService) GetTaskByUuid(uuid string) (result *dto.TaskResponse, err error) {
@@ -61,7 +58,7 @@ func (s *TaskService) GetTaskByUuid(uuid string) (result *dto.TaskResponse, err 
 		return nil, err
 	}
 
-	res := &dto.TaskResponse{
+	result = &dto.TaskResponse{
 		// Not returning id to avoid security risks (guessable)
 		Uuid:        task.Uuid,
 		Title:       task.Title,
@@ -75,7 +72,7 @@ func (s *TaskService) GetTaskByUuid(uuid string) (result *dto.TaskResponse, err 
 		UpdatedBy:   task.UpdatedBy,
 	}
 
-	return res, nil
+	return result, nil
 }
 
 func (s *TaskService) UpdateTask(uuid string, params dto.TaskUpdate) (err error) {
@@ -85,12 +82,16 @@ func (s *TaskService) UpdateTask(uuid string, params dto.TaskUpdate) (err error)
 		return err
 	}
 
+	now := time.Now()
+
 	updateValue := &model.Task{
 		Uuid:        uuid,
 		Description: params.Description,
 		Completed:   params.Completed,
 		StartDate:   params.StartDate,
 		Deadline:    params.Deadline,
+		UpdatedAt:   &now,
+		UpdatedBy:   params.UpdatedBy,
 	}
 
 	err = s.repository.UpdateTask(updateValue)

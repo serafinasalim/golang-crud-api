@@ -26,6 +26,7 @@ func NewTaskController(service *service.TaskService) *TaskController {
 // @Success 200 {object} utils.APIResponse{data=[]dto.TaskResponse} "Tasks fetched successfully"
 // @Success 204 {object} utils.APIResponse{} "Tasks No Record"
 // @Failure 500 {object} utils.HTTPError "Failed to fetch tasks"
+// @Security Bearer
 // @Router /tasks [get]
 func (c *TaskController) GetAllTasks(ctx *gin.Context) {
 	tasks, err := c.service.GetAllTasks()
@@ -50,7 +51,9 @@ func (c *TaskController) GetAllTasks(ctx *gin.Context) {
 // @Param task body dto.TaskRequest true "Task Request Body"
 // @Success 201 {object} utils.APIResponse{status=string,message=string,data=string} "Task created successfully"
 // @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid input"
+// @Failure 401 {object} utils.APIResponse{status=string,message=string} "Unauthorized"
 // @Failure 500 {object} utils.HTTPError "Failed to create task"
+// @Security Bearer
 // @Router /tasks [post]
 func (c *TaskController) CreateTask(ctx *gin.Context) {
 	var params dto.TaskRequest
@@ -59,6 +62,20 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		utils.RespondError(ctx, http.StatusBadRequest, utils.ErrInvalidRequest, err)
 		return
 	}
+
+	username, usernameExists := ctx.Get("username")
+	if !usernameExists {
+		utils.RespondError(ctx, http.StatusUnauthorized, utils.ErrInvalidToken, nil)
+		return
+	}
+
+	strUsername, ok := username.(string)
+	if !ok {
+		utils.RespondError(ctx, http.StatusInternalServerError, utils.ErrInvalidToken, nil)
+		return
+	}
+
+	params.CreatedBy = strUsername
 
 	res, err := c.service.CreateTask(params)
 	if err != nil {
@@ -76,8 +93,10 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 // @Produce json
 // @Param uuid path string true "Task Uuid"
 // @Success 200 {object} utils.APIResponse{data=dto.TaskResponse} "Task fetched successfully"
+// @Failure 401 {object} utils.APIResponse{status=string,message=string} "Unauthorized"
 // @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
 // @Failure 500 {object} utils.HTTPError "Failed to fetch task"
+// @Security Bearer
 // @Router /tasks/{uuid} [get]
 func (c *TaskController) GetTaskByUuid(ctx *gin.Context) {
 	uuid := ctx.Param("uuid")
@@ -104,18 +123,34 @@ func (c *TaskController) GetTaskByUuid(ctx *gin.Context) {
 // @Param taskUpdate body dto.TaskUpdate true "Updated Task"
 // @Success 200 {object} model.Task "Task updated successfully"
 // @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid input"
+// @Failure 401 {object} utils.APIResponse{status=string,message=string} "Unauthorized"
 // @Failure 404 {object} utils.APIResponse{} "Task not found"
+// @Security Bearer
 // @Router /tasks/{uuid} [patch]
 func (c *TaskController) UpdateTask(ctx *gin.Context) {
 	id := ctx.Param("uuid")
 
-	var taskUpdate dto.TaskUpdate
-	if err := ctx.ShouldBindJSON(&taskUpdate); err != nil {
+	var params dto.TaskUpdate
+	if err := ctx.ShouldBindJSON(&params); err != nil {
 		utils.RespondError(ctx, http.StatusBadRequest, utils.ErrInvalidRequest, err)
 		return
 	}
 
-	err := c.service.UpdateTask(id, taskUpdate)
+	username, usernameExists := ctx.Get("username")
+	if !usernameExists {
+		utils.RespondError(ctx, http.StatusUnauthorized, utils.ErrInvalidToken, nil)
+		return
+	}
+
+	strUsername, ok := username.(string)
+	if !ok {
+		utils.RespondError(ctx, http.StatusInternalServerError, utils.ErrInvalidToken, nil)
+		return
+	}
+
+	params.UpdatedBy = &strUsername
+
+	err := c.service.UpdateTask(id, params)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			utils.RespondError(ctx, http.StatusNotFound, utils.ErrTaskNotFound, err)
@@ -137,7 +172,9 @@ func (c *TaskController) UpdateTask(ctx *gin.Context) {
 // @Param uuid path string true "Task Uuid"
 // @Success 200 {object} utils.APIResponse "Task deleted successfully"
 // @Failure 400 {object} utils.APIResponse{status=string,message=string} "Invalid request"
+// @Failure 401 {object} utils.APIResponse{status=string,message=string} "Unauthorized"
 // @Failure 404 {object} utils.APIResponse{status=string,message=string} "Task not found"
+// @Security Bearer
 // @Router /tasks/{uuid} [delete]
 func (c *TaskController) DeleteTask(ctx *gin.Context) {
 	uuid := ctx.Param("uuid")

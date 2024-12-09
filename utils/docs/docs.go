@@ -175,6 +175,11 @@ const docTemplate = `{
         },
         "/tasks": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get a list of all tasks",
                 "consumes": [
                     "application/json"
@@ -223,6 +228,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Sample Payload: \u003cbr\u003e ` + "`" + `{ ` + "`" + `\u003cbr\u003e` + "`" + ` \"title\": \"Fix Bugs\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"description\": \"fix multiple bugs in dev\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"startDate\": \"2024-12-05T00:00:00Z\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"deadline\": \"2024-12-07T00:00:00Z\" ` + "`" + `\u003cbr\u003e` + "`" + ` }` + "`" + `",
                 "consumes": [
                     "application/json"
@@ -291,6 +301,27 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "500": {
                         "description": "Failed to create task",
                         "schema": {
@@ -302,6 +333,11 @@ const docTemplate = `{
         },
         "/tasks/{uuid}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -340,6 +376,27 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "404": {
                         "description": "Task not found",
                         "schema": {
@@ -370,6 +427,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -417,6 +479,27 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "404": {
                         "description": "Task not found",
                         "schema": {
@@ -441,6 +524,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Sample Payload (only send the ones you want to update): \u003cbr\u003e ` + "`" + `{ ` + "`" + `\u003cbr\u003e` + "`" + ` \"description\": \"fix lots of bugs\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"completed\": true, ` + "`" + `\u003cbr\u003e` + "`" + ` \"startDate\": \"2024-12-05T00:00:00Z\", ` + "`" + `\u003cbr\u003e` + "`" + ` \"deadline\": \"2024-12-07T00:00:00Z\" ` + "`" + `\u003cbr\u003e` + "`" + ` }` + "`" + `",
                 "consumes": [
                     "application/json"
@@ -479,6 +567,27 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid input",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "allOf": [
                                 {
@@ -552,6 +661,9 @@ const docTemplate = `{
                 "title"
             ],
             "properties": {
+                "createdBy": {
+                    "type": "string"
+                },
                 "deadline": {
                     "type": "string"
                 },
@@ -617,6 +729,9 @@ const docTemplate = `{
                     "minLength": 5
                 },
                 "startDate": {
+                    "type": "string"
+                },
+                "updatedBy": {
                     "type": "string"
                 }
             }
@@ -686,6 +801,13 @@ const docTemplate = `{
                     "default": false
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

@@ -136,7 +136,7 @@ func (r *TaskRepository) GetTaskByUuid(uuid string) (result *model.Task, err err
 }
 
 func (r *TaskRepository) UpdateTask(params *model.Task) (err error) {
-	// Query untuk memperbarui task berdasarkan ID
+	// Query untuk memperbarui task berdasarkan Uuid
 	const query = `UPDATE public.tasks SET
 						description = COALESCE($2, description),
 						completed = COALESCE($3, completed),
