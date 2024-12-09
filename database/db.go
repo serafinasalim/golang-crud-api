@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -9,8 +10,14 @@ import (
 
 var DB *sql.DB
 
+const (
+	DBUser     = "user"
+	DBPassword = "password"
+	DBName     = "dbname"
+)
+
 func ConnectDB() {
-	connStr := "user=postgres password=12345 dbname=golang-crud sslmode=disable"
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", DBUser, DBPassword, DBName)
 	var err error
 	DB, err = sql.Open("postgres", connStr)
 	if err != nil {
