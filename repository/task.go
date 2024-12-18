@@ -135,13 +135,13 @@ func (r *TaskRepository) GetTaskByUuid(uuid string) (result *model.Task, err err
 	return &task, nil
 }
 
-func (r *TaskRepository) UpdateTask(params *model.Task) (err error) {
+func (r *TaskRepository) UpdateTask(params *model.TaskUpdate) (err error) {
 	// Query untuk memperbarui task berdasarkan Uuid
 	const query = `UPDATE public.tasks SET
-						description = COALESCE($2, description),
-						completed = COALESCE($3, completed),
-						start_date = COALESCE($4, start_date),
-						deadline = COALESCE($5, deadline),
+						description = $2,
+						completed = $3,
+						start_date = $4,
+						deadline = $5,
 						updated_at = $6,
 						updated_by = $7
 					WHERE uuid = $1`
