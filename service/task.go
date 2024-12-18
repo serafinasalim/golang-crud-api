@@ -77,19 +77,18 @@ func (s *TaskService) GetTaskByUuid(uuid string) (result *dto.TaskResponse, err 
 
 func (s *TaskService) UpdateTask(uuid string, params dto.TaskUpdate) (err error) {
 	// Find the task by Uuid
-	_, err = s.repository.GetTaskByUuid(uuid)
+	details, err := s.repository.GetTaskByUuid(uuid)
 	if err != nil {
 		return err
 	}
 
 	now := time.Now()
-
-	updateValue := &model.Task{
+	updateValue := &model.TaskUpdate{
 		Uuid:        uuid,
-		Description: params.Description,
-		Completed:   params.Completed,
-		StartDate:   params.StartDate,
-		Deadline:    params.Deadline,
+		Description: helper.CoalesceString(params.Description, details.Description),
+		Completed:   helper.CoalesceBoolPtr(params.Completed, &details.Completed),
+		StartDate:   helper.CoalesceTime(params.StartDate, details.StartDate),
+		Deadline:    helper.CoalesceTime(params.Deadline, details.Deadline),
 		UpdatedAt:   &now,
 		UpdatedBy:   params.UpdatedBy,
 	}
